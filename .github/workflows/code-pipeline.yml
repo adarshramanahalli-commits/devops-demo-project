@@ -41,27 +41,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # ✅ Build Artifact
-      - name: Build Artifact
-        run: zip -r app.zip .
+     
 
-      # ✅ Upload Artifact
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-artifact
-          path: app.zip
-
-      # ✅ Download Artifact (as per assignment)
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-
-      # ✅ Deploy to Azure Web App (ADD AFTER CREATING AZURE APP)
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: devops-demo-app-adi
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+     
