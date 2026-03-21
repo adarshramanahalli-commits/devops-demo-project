@@ -5,35 +5,63 @@ on:
     branches:
       - main
 
+env:
+  SONAR_PROJECT_KEY: adarshramanahalli-commits_devops-demo-project
+  SONAR_ORGANIZATION: adarshramanahalli-commits
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Checkout Code
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # ✅ Setup Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
+      # ✅ Install Dependencies
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r app/requirements.txt
           pip install pytest
 
+      # ✅ Run Tests
       - name: Run Tests
-        run: |
-          pytest tests/
+        run: pytest tests/
 
+      # ✅ SonarCloud Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # ✅ Build Artifact
       - name: Build Artifact
-        run: |
-          zip -r app.zip .
+        run: zip -r app.zip .
 
+      # ✅ Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-artifact
           path: app.zip
+
+      # ✅ Download Artifact (as per assignment)
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      # ✅ Deploy to Azure Web App (ADD AFTER CREATING AZURE APP)
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: app.zip
